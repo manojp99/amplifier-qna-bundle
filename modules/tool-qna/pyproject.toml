@@ -1,0 +1,12 @@
+[project]
+name = "amplifier-tool-qna"
+version = "0.1.0"
+description = "Structured Q&A tool for gathering requirements"
+requires-python = ">=3.11"
+
+[project.entry-points."amplifier.modules"]
+tool-qna = "amplifier_tool_qna"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"

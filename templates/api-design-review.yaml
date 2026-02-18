@@ -1,0 +1,158 @@
+id: api_design_review
+name: API Design Review
+description: Gather requirements and design decisions for a new API endpoint or service.
+sections:
+  - id: overview
+    title: API Overview
+    description: High-level purpose and context for the API.
+    guidance: >
+      Start with the big picture. Understand what this API is for and who will
+      consume it before diving into specifics. If the user is unsure about API
+      style, help them think through trade-offs (REST vs GraphQL vs gRPC).
+    questions:
+      - id: api_name
+        text: What is the name or identifier for this API?
+        type: text
+        hint: A short name the team will use (e.g. "User Profile API").
+
+      - id: api_purpose
+        text: What is the primary purpose of this API?
+        type: text
+        hint: Describe what consumers will use it for in 1-2 sentences.
+
+      - id: api_consumers
+        text: Who are the consumers of this API?
+        type: multi_choice
+        options:
+          - Internal frontend
+          - Internal backend services
+          - External third-party developers
+          - Mobile clients
+          - Partner integrations
+        hint: Select all that apply.
+
+      - id: api_style
+        text: What API style are you targeting?
+        type: choice
+        options:
+          - REST
+          - GraphQL
+          - gRPC
+          - WebSocket
+          - Event-driven (pub/sub)
+
+  - id: endpoints
+    title: Endpoints & Operations
+    description: The specific operations the API needs to support.
+    guidance: >
+      Get concrete about what the API does. If the user lists endpoints,
+      ask about edge cases: what happens on not-found, what about pagination,
+      are there bulk operations? Record unexpected requirements as notes.
+    questions:
+      - id: key_operations
+        text: List the key operations or endpoints this API must support.
+        type: text
+        hint: "e.g. GET /users/{id}, POST /users, PUT /users/{id}"
+
+      - id: http_methods
+        text: Which HTTP methods will be used?
+        type: multi_choice
+        options:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+        required: false
+
+      - id: request_payload
+        text: Describe the expected request payload or parameters for the primary operation.
+        type: text
+        hint: Key fields, types, and which are required vs optional.
+
+      - id: response_payload
+        text: Describe the expected response structure for the primary operation.
+        type: text
+        hint: Key fields, types, and any envelope pattern (e.g. data/meta/errors).
+
+  - id: auth_and_security
+    title: Authentication & Security
+    description: How the API is secured and who can access it.
+    guidance: >
+      Security decisions are hard to change later. If the user picks "no auth",
+      confirm that's intentional. For OAuth/JWT, ask about token lifetimes and
+      refresh strategies. Note any compliance requirements (SOC2, HIPAA) as notes.
+    questions:
+      - id: auth_method
+        text: What authentication method will be used?
+        type: choice
+        options:
+          - API Key
+          - OAuth 2.0 / Bearer Token
+          - JWT
+          - mTLS
+          - No authentication (public)
+          - Other
+
+      - id: authorization_model
+        text: Describe the authorization model.
+        type: text
+        required: false
+        hint: Role-based, scope-based, resource-level permissions, etc.
+
+      - id: rate_limiting
+        text: Are there rate limiting requirements?
+        type: yes_no
+
+      - id: rate_limit_details
+        text: Describe the rate limiting rules.
+        type: text
+        condition:
+          question_id: rate_limiting
+          equals: true
+        hint: "e.g. 100 requests/minute per API key, burst allowance, etc."
+
+  - id: non_functional
+    title: Non-Functional Requirements
+    description: Performance, reliability, and operational expectations.
+    guidance: >
+      Users often underestimate non-functional needs. If they say "no specific
+      requirement" for latency, ask what their users would tolerate. For
+      versioning, explain trade-offs briefly if they're unsure.
+    questions:
+      - id: expected_latency
+        text: What is the acceptable response latency?
+        type: choice
+        options:
+          - "< 100ms (real-time)"
+          - "< 500ms (interactive)"
+          - "< 2s (standard)"
+          - "< 30s (batch/async)"
+          - No specific requirement
+
+      - id: expected_throughput
+        text: What request volume do you expect?
+        type: text
+        required: false
+        hint: "e.g. 500 req/s peak, 10K req/day average."
+
+      - id: versioning_strategy
+        text: How will the API be versioned?
+        type: choice
+        options:
+          - URL path (/v1/resource)
+          - Header (Accept-Version)
+          - Query parameter (?version=1)
+          - No versioning planned yet
+
+      - id: backwards_compatibility
+        text: How important is backwards compatibility?
+        type: scale
+        scale_min: 1
+        scale_max: 5
+        hint: 1 = can break freely, 5 = must never break existing consumers.
+
+      - id: additional_notes
+        text: Any additional notes, constraints, or open questions?
+        type: text
+        required: false
