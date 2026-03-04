@@ -3,8 +3,8 @@ bundle:
   name: qna
   version: 0.1.0
   includes:
-    - foundation:behaviors/core
-    - behaviors/qna
+    - bundle: git+https://github.com/microsoft/amplifier-foundation@main
+    - bundle: qna:behaviors/qna
 ---
 
 # Q&A Requirements Gathering Bundle
