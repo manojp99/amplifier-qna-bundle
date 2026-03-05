@@ -4,7 +4,7 @@ bundle:
   version: 0.1.0
 tools:
   - module: tool-qna
-    source: ../modules/tool-qna
+    source: git+https://github.com/manojp99/amplifier-bundle-qna@main#subdirectory=modules/tool-qna
     config:
       custom_templates_dir: templates/
       questions_per_batch: 5
