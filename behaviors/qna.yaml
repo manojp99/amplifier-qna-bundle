@@ -1,0 +1,17 @@
+---
+bundle:
+  name: qna
+  version: 0.1.0
+tools:
+  - module: tool-qna
+    source: ../modules/tool-qna
+    config:
+      custom_templates_dir: templates/
+      questions_per_batch: 5
+agents:
+  include:
+    - qna:requirements-analyst
+context:
+  include:
+    - qna:context/qna-instructions.md
+---
