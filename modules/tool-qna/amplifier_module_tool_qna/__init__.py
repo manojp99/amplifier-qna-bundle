@@ -6,6 +6,8 @@ import json
 import uuid
 from typing import Any
 
+from amplifier_core import ModuleCoordinator
+
 from .models import Answer, Note, Question, QuestionType, Session, Template
 from .reports import generate_json_report, generate_markdown_report
 from .templates import TEMPLATES
@@ -15,8 +17,8 @@ __all__ = ["mount", "QnATool"]
 _DEFAULT_QUESTIONS_PER_BATCH = 5
 
 
-def mount(config: dict[str, Any] | None = None) -> QnATool:
-    """Amplifier module entry point. Returns a configured QnATool instance.
+async def mount(coordinator: ModuleCoordinator, config: dict) -> QnATool:
+    """Amplifier module entry point. Mounts the Q&A tool against the coordinator.
 
     Supported config keys:
 
@@ -27,15 +29,14 @@ def mount(config: dict[str, Any] | None = None) -> QnATool:
     - ``questions_per_batch`` (int): Number of questions returned per batch
       by ``get_questions`` and ``start_session``.  Defaults to 5.
     """
-    cfg = config or {}
-    custom_dir: str | None = cfg.get("custom_templates_dir")
-    questions_per_batch: int = int(
-        cfg.get("questions_per_batch", _DEFAULT_QUESTIONS_PER_BATCH)
+    tool = QnATool(
+        custom_templates_dir=config.get("custom_templates_dir"),
+        questions_per_batch=int(
+            config.get("questions_per_batch", _DEFAULT_QUESTIONS_PER_BATCH)
+        ),
     )
-    return QnATool(
-        custom_templates_dir=custom_dir,
-        questions_per_batch=questions_per_batch,
-    )
+    await coordinator.mount("tools", tool, name="qna")
+    return tool
 
 
 def _format_question(q: Question) -> str:
